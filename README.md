@@ -24,11 +24,11 @@ chmod +x install.sh start.command stop.command scripts/*.sh
 ./install.sh
 ```
 
-The setup installs Ollama from its official macOS download into `~/Applications/Ollama.app` if it is not already installed. It also installs `uv` if needed, sets up Open WebUI in an isolated Python 3.11 tool environment, creates a persistent secret/data directory under `~/Library/Application Support/Carrot LLM/`, and creates `~/Desktop/Carrot LLM.command` with the cat icon. The installer downloads both required small models: `qwen3:1.7b` for general chat and `lakomoor/vikhr-llama-3.2-1b-instruct:1b` for Russian-language chat. Make sure you have an internet connection and a few GB of free disk space.
+The setup installs Ollama from its official macOS download into `~/Applications/Ollama.app` if it is not already installed. It also installs `uv` if needed, sets up Open WebUI in an isolated Python 3.11 tool environment, creates a persistent secret/data directory under `~/Library/Application Support/Carrot LLM/`, and creates `~/Desktop/Carrot LLM.command` with the cat icon. The installer downloads both required small models: `qwen3:1.7b` for general chat and `evilfreelancer/rugpt3:1.3b` for Russian text generation. Make sure you have an internet connection and a few GB of free disk space.
 
 ### 2. Choose a model for your chat
 
-After setup, both models appear in Open WebUI's model selector. Choose **`lakomoor/vikhr-llama-3.2-1b-instruct:1b`** for Russian conversations; it is a 1B Russian-focused instruction model. Choose **`qwen3:1.7b`** for general chat. The Russian model is available in Ollama's [official model catalogue](https://ollama.com/lakomoor/vikhr-llama-3.2-1b-instruct).
+After setup, both models appear in Open WebUI's model selector. Choose **`evilfreelancer/rugpt3:1.3b`** for Russian text generation and **`qwen3:1.7b`** for general chat. Note that ruGPT-3 is a base model, not instruction-tuned: it is designed to continue text and may not follow chat instructions like an assistant. It has a 2,048-token context. See the [Ollama model page](https://ollama.com/evilfreelancer/rugpt3:1.3b) for details.
 
 The model catalogue and router config document the intended Russian language rule, but automatic model switching is not implemented yet. For now, choose the model in the selector. Model speed and memory use depend on the Mac, context length, and what else is running.
 

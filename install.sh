@@ -110,7 +110,7 @@ printf 'Project: %s\nData:    %s\nLauncher: %s\n' "$ROOT_DIR" "$APP_SUPPORT_DIR/
 
 "$ROOT_DIR/scripts/ensure-ollama.sh" "$OLLAMA_BIN" "$APP_SUPPORT_DIR"
 
-REQUIRED_MODELS=("qwen3:1.7b" "lakomoor/vikhr-llama-3.2-1b-instruct:1b")
+REQUIRED_MODELS=("qwen3:1.7b" "evilfreelancer/rugpt3:1.3b")
 for model in "${REQUIRED_MODELS[@]}"; do
   say "Checking whether required model $model is installed..."
   if "$OLLAMA_BIN" list 2>/dev/null | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
