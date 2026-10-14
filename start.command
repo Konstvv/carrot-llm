@@ -43,20 +43,7 @@ fi
 [[ -s "$SECRET_FILE" ]] || fail "Local setup is incomplete. Run ./install.sh from the project folder first."
 [[ -n "$OLLAMA_BIN" && -x "$OLLAMA_BIN" ]] || fail "Ollama is not installed. Run ./install.sh from the project folder first."
 
-if ! curl -fsS --max-time 2 "$OLLAMA_URL/api/tags" >/dev/null 2>&1; then
-  say "Starting Ollama..."
-  if [[ -n "$OLLAMA_APP" ]]; then
-    open -a "$OLLAMA_APP" >/dev/null 2>&1 || true
-  else
-    open -a Ollama >/dev/null 2>&1 || true
-  fi
-  ollama_ready=false
-  for _ in $(seq 1 30); do
-    if curl -fsS --max-time 2 "$OLLAMA_URL/api/tags" >/dev/null 2>&1; then ollama_ready=true; break; fi
-    sleep 2
-  done
-  [[ "$ollama_ready" == true ]] || fail "Ollama did not start. Open the Ollama app and try again."
-fi
+"$PROJECT_DIR/scripts/ensure-ollama.sh" "$OLLAMA_BIN" "$APP_SUPPORT_DIR"
 
 # Always confirm Ollama is available before reusing an already-running WebUI.
 if curl -fsS --max-time 1 "$URL/health" >/dev/null 2>&1; then

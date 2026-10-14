@@ -75,8 +75,8 @@ For backup and a future move to another Mac or home server, see [docs/backup-and
 
 ## Troubleshooting
 
-- **Setup is waiting for Ollama:** the installer opens Ollama automatically and waits up to three minutes, showing recent server output while it checks. The full Ollama server log is at `~/.ollama/logs/server.log`.
-- **The app says Ollama is unavailable:** open Ollama and wait for it to finish starting. Try `ollama list` in Terminal.
+- **Setup is waiting for Ollama:** Carrot starts `ollama serve` automatically and waits up to three minutes, showing its output while it checks. Output is saved to `~/Library/Application Support/Carrot LLM/ollama-serve.log`.
+- **The chat says Ollama is unavailable:** double-click the Carrot shortcut again; it starts `ollama serve` automatically if needed. Check `~/Library/Application Support/Carrot LLM/ollama-serve.log` if startup fails.
 - **The page does not open:** look at `~/Library/Application Support/Carrot LLM/open-webui.log`.
 - **Port 8080 is already in use:** stop the other service or change `PORT` in `start.command` and `stop.command` consistently.
 - **The Mac becomes slow:** use a smaller model, lower its context length, and avoid keeping multiple large models loaded at once.

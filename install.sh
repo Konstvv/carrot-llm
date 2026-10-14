@@ -108,59 +108,19 @@ fi
 say "Carrot components are installed. Starting Ollama and preparing the required models..."
 printf 'Project: %s\nData:    %s\nLauncher: %s\n' "$ROOT_DIR" "$APP_SUPPORT_DIR/data" "$DESKTOP_LAUNCHER"
 
-say "Checking whether Ollama is responding at http://127.0.0.1:11434..."
-if curl -fsS --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
-  ollama_ready=true
-  say "Ollama is already responding."
-else
-  ollama_ready=false
-  OLLAMA_SERVER_LOG="$HOME/.ollama/logs/server.log"
-  OLLAMA_START_TIMEOUT=180
-  say "Ollama is not responding yet; opening the Ollama app. Waiting up to ${OLLAMA_START_TIMEOUT} seconds."
-  say "Ollama's server output is recorded at: $OLLAMA_SERVER_LOG"
-  if [[ -n "$OLLAMA_APP" ]]; then
-    open -a "$OLLAMA_APP" >/dev/null 2>&1 || true
-  else
-    open -a Ollama >/dev/null 2>&1 || true
-  fi
-  started_at=$SECONDS
-  attempt=0
-  while (( SECONDS - started_at < OLLAMA_START_TIMEOUT )); do
-    attempt=$((attempt + 1))
-    elapsed=$((SECONDS - started_at))
-    say "Waiting for Ollama API (${elapsed}s/${OLLAMA_START_TIMEOUT}s; check $attempt)..."
-    if curl -fsS --max-time 1 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
-      ollama_ready=true
-      say "Ollama is ready."
-      break
-    fi
-    if (( attempt % 5 == 0 )) && [[ -s "$OLLAMA_SERVER_LOG" ]]; then
-      say "Recent Ollama server output:"
-      tail -n 8 "$OLLAMA_SERVER_LOG"
-    fi
-    sleep 1
-  done
-fi
+"$ROOT_DIR/scripts/ensure-ollama.sh" "$OLLAMA_BIN" "$APP_SUPPORT_DIR"
 
-if [[ "$ollama_ready" == true ]]; then
-  REQUIRED_MODELS=("qwen3:1.7b" "lakomoor/vikhr-llama-3.2-1b-instruct:1b")
-  for model in "${REQUIRED_MODELS[@]}"; do
-    say "Checking whether required model $model is installed..."
-    if "$OLLAMA_BIN" list 2>/dev/null | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
-      say "Required model $model is already installed."
-    else
-      say "Downloading required model $model. Ollama will show download progress below..."
-      "$OLLAMA_BIN" pull "$model"
-      say "Finished downloading $model."
-    fi
-  done
-else
-  if [[ -s "${OLLAMA_SERVER_LOG:-}" ]]; then
-    say "Final Ollama server output:"
-    tail -n 30 "$OLLAMA_SERVER_LOG"
+REQUIRED_MODELS=("qwen3:1.7b" "lakomoor/vikhr-llama-3.2-1b-instruct:1b")
+for model in "${REQUIRED_MODELS[@]}"; do
+  say "Checking whether required model $model is installed..."
+  if "$OLLAMA_BIN" list 2>/dev/null | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
+    say "Required model $model is already installed."
+  else
+    say "Downloading required model $model. Ollama will show download progress below..."
+    "$OLLAMA_BIN" pull "$model"
+    say "Finished downloading $model."
   fi
-  fail "Ollama did not start within ${OLLAMA_START_TIMEOUT:-180} seconds, so required models were not downloaded. The server log is at $HOME/.ollama/logs/server.log. Open Ollama and rerun ./install.sh."
-fi
+done
 
 say "Installation complete. Both required models are ready."
 say "Double-click 'Carrot LLM.command' on the Desktop to launch the chat."

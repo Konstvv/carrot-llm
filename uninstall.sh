@@ -62,6 +62,22 @@ else
   say "uv was not found; no Open WebUI tool installation was removed."
 fi
 
+if [[ -f "$APP_SUPPORT_DIR/ollama-serve.pid" ]]; then
+  ollama_pid="$(cat "$APP_SUPPORT_DIR/ollama-serve.pid" 2>/dev/null || true)"
+  if [[ "$ollama_pid" =~ ^[0-9]+$ ]] && kill -0 "$ollama_pid" 2>/dev/null; then
+    ollama_command="$(ps -p "$ollama_pid" -o command= 2>/dev/null || true)"
+    if [[ "$ollama_command" == *"ollama"* && "$ollama_command" == *"serve"* ]]; then
+      kill -TERM "$ollama_pid" 2>/dev/null || true
+      for _ in $(seq 1 10); do
+        if ! kill -0 "$ollama_pid" 2>/dev/null; then break; fi
+        sleep 1
+      done
+      if kill -0 "$ollama_pid" 2>/dev/null; then kill -KILL "$ollama_pid" 2>/dev/null || true; fi
+      say "Stopped the Ollama server started by Carrot."
+    fi
+  fi
+fi
+
 if [[ -d "$APP_SUPPORT_DIR" ]]; then
   rm -rf "$APP_SUPPORT_DIR"
   say "Removed Carrot's local data and settings."
