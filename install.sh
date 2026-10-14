@@ -114,18 +114,29 @@ if curl -fsS --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
   say "Ollama is already responding."
 else
   ollama_ready=false
-  say "Ollama is not responding yet; opening the Ollama app..."
+  OLLAMA_SERVER_LOG="$HOME/.ollama/logs/server.log"
+  OLLAMA_START_TIMEOUT=180
+  say "Ollama is not responding yet; opening the Ollama app. Waiting up to ${OLLAMA_START_TIMEOUT} seconds."
+  say "Ollama's server output is recorded at: $OLLAMA_SERVER_LOG"
   if [[ -n "$OLLAMA_APP" ]]; then
     open -a "$OLLAMA_APP" >/dev/null 2>&1 || true
   else
     open -a Ollama >/dev/null 2>&1 || true
   fi
-  for attempt in $(seq 1 30); do
-    say "Waiting for Ollama API (check $attempt/30)..."
+  started_at=$SECONDS
+  attempt=0
+  while (( SECONDS - started_at < OLLAMA_START_TIMEOUT )); do
+    attempt=$((attempt + 1))
+    elapsed=$((SECONDS - started_at))
+    say "Waiting for Ollama API (${elapsed}s/${OLLAMA_START_TIMEOUT}s; check $attempt)..."
     if curl -fsS --max-time 1 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
       ollama_ready=true
       say "Ollama is ready."
       break
+    fi
+    if (( attempt % 5 == 0 )) && [[ -s "$OLLAMA_SERVER_LOG" ]]; then
+      say "Recent Ollama server output:"
+      tail -n 8 "$OLLAMA_SERVER_LOG"
     fi
     sleep 1
   done
@@ -144,7 +155,11 @@ if [[ "$ollama_ready" == true ]]; then
     fi
   done
 else
-  fail "Ollama did not start, so required models were not downloaded. Open Ollama and rerun ./install.sh."
+  if [[ -s "${OLLAMA_SERVER_LOG:-}" ]]; then
+    say "Final Ollama server output:"
+    tail -n 30 "$OLLAMA_SERVER_LOG"
+  fi
+  fail "Ollama did not start within ${OLLAMA_START_TIMEOUT:-180} seconds, so required models were not downloaded. The server log is at $HOME/.ollama/logs/server.log. Open Ollama and rerun ./install.sh."
 fi
 
 say "Installation complete. Both required models are ready."
