@@ -98,7 +98,7 @@ if command -v swiftc >/dev/null 2>&1; then
   elif ! "$ICON_HELPER" "$ROOT_DIR/assets/carrot-cat.png" "$DESKTOP_LAUNCHER"; then
     say "Could not set the Finder icon automatically. The launcher still works; see README for manual setup."
   else
-    /usr/bin/SetFile -a C "$DESKTOP_LAUNCHER" 2>/dev/null || true
+    /usr/bin/SetFile -a CE "$DESKTOP_LAUNCHER" 2>/dev/null || true
     touch "$DESKTOP_LAUNCHER"
   fi
 else
