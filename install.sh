@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 APP_SUPPORT_DIR="$HOME/Library/Application Support/Carrot LLM"
 
-say() { printf '\n🥕 %s\n' "$*"; }
+say() { printf '\n[%s] 🥕 %s\n' "$(date '+%H:%M:%S')" "$*"; }
 fail() { printf '\nCarrot setup: %s\n' "$*" >&2; exit 1; }
 
 [[ "$(uname -s)" == "Darwin" ]] || fail "This setup script currently supports macOS only."
@@ -58,7 +58,7 @@ if [[ -z "$UV_BIN" ]]; then
 fi
 [[ -n "$UV_BIN" && -x "$UV_BIN" ]] || fail "uv installation completed, but its executable was not found. Restart Terminal and retry."
 
-say "Installing/updating Open WebUI in an isolated Python 3.11 environment..."
+say "Installing or updating Open WebUI in an isolated Python 3.11 environment..."
 if "$UV_BIN" tool list 2>/dev/null | grep -q '^open-webui '; then
   "$UV_BIN" tool upgrade open-webui --python 3.11
 else
@@ -105,36 +105,47 @@ else
   say "Swift compiler was not found, so the desktop shortcut keeps the default icon."
 fi
 
-say "Setup complete."
+say "Carrot components are installed. Starting Ollama and preparing the required models..."
 printf 'Project: %s\nData:    %s\nLauncher: %s\n' "$ROOT_DIR" "$APP_SUPPORT_DIR/data" "$DESKTOP_LAUNCHER"
 
+say "Checking whether Ollama is responding at http://127.0.0.1:11434..."
 if curl -fsS --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
   ollama_ready=true
+  say "Ollama is already responding."
 else
   ollama_ready=false
+  say "Ollama is not responding yet; opening the Ollama app..."
   if [[ -n "$OLLAMA_APP" ]]; then
     open -a "$OLLAMA_APP" >/dev/null 2>&1 || true
   else
     open -a Ollama >/dev/null 2>&1 || true
   fi
-  for _ in $(seq 1 30); do
-    if curl -fsS --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then ollama_ready=true; break; fi
-    sleep 2
+  for attempt in $(seq 1 30); do
+    say "Waiting for Ollama API (check $attempt/30)..."
+    if curl -fsS --max-time 1 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
+      ollama_ready=true
+      say "Ollama is ready."
+      break
+    fi
+    sleep 1
   done
 fi
 
 if [[ "$ollama_ready" == true ]]; then
   REQUIRED_MODELS=("qwen3:1.7b" "lakomoor/vikhr-llama-3.2-1b-instruct:1b")
   for model in "${REQUIRED_MODELS[@]}"; do
+    say "Checking whether required model $model is installed..."
     if "$OLLAMA_BIN" list 2>/dev/null | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
       say "Required model $model is already installed."
     else
-      say "Downloading required model $model..."
+      say "Downloading required model $model. Ollama will show download progress below..."
       "$OLLAMA_BIN" pull "$model"
+      say "Finished downloading $model."
     fi
   done
 else
   fail "Ollama did not start, so required models were not downloaded. Open Ollama and rerun ./install.sh."
 fi
 
+say "Installation complete. Both required models are ready."
 say "Double-click 'Carrot LLM.command' on the Desktop to launch the chat."
