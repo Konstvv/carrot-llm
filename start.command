@@ -43,12 +43,6 @@ fi
 [[ -s "$SECRET_FILE" ]] || fail "Local setup is incomplete. Run ./install.sh from the project folder first."
 [[ -n "$OLLAMA_BIN" && -x "$OLLAMA_BIN" ]] || fail "Ollama is not installed. Run ./install.sh from the project folder first."
 
-if curl -fsS --max-time 1 "$URL/health" >/dev/null 2>&1; then
-  say "Carrot is already running. Opening the chat..."
-  open "$URL"
-  exit 0
-fi
-
 if ! curl -fsS --max-time 2 "$OLLAMA_URL/api/tags" >/dev/null 2>&1; then
   say "Starting Ollama..."
   if [[ -n "$OLLAMA_APP" ]]; then
@@ -62,6 +56,13 @@ if ! curl -fsS --max-time 2 "$OLLAMA_URL/api/tags" >/dev/null 2>&1; then
     sleep 2
   done
   [[ "$ollama_ready" == true ]] || fail "Ollama did not start. Open the Ollama app and try again."
+fi
+
+# Always confirm Ollama is available before reusing an already-running WebUI.
+if curl -fsS --max-time 1 "$URL/health" >/dev/null 2>&1; then
+  say "Carrot is already running. Opening the chat..."
+  open "$URL"
+  exit 0
 fi
 
 # If the saved process is alive, wait for that process instead of starting a second copy.
