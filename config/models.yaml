@@ -1,12 +1,18 @@
-# Informational model catalogue for the first milestone.
-# This file is not read by the launcher yet; it will become input for the router later.
+# Model catalogue for the first milestone. Open WebUI currently lists installed Ollama
+# models directly; this file is informational and will feed the future router.
 
 ollama_base_url: "http://127.0.0.1:11434"
 
 models:
   - id: "quick"
     ollama_name: "qwen3:1.7b"
-    purpose: "General chat and short tasks"
+    purpose: "General chat and short tasks, especially when not chatting in Russian"
+    recommended_for_8gb_unified_memory: true
+    enabled_by_default: true
+
+  - id: "russian"
+    ollama_name: "lakomoor/vikhr-llama-3.2-1b-instruct:1b"
+    purpose: "Russian-language chat and everyday tasks"
     recommended_for_8gb_unified_memory: true
     enabled_by_default: true
 

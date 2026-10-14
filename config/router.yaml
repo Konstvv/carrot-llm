@@ -9,6 +9,8 @@ routing:
   default_model: "quick"
   # Planned rule examples, not yet executed:
   rules:
+    - task: "russian_language_chat"
+      model: "russian"
     - task: "short_chat"
       model: "quick"
     - task: "complex_reasoning"

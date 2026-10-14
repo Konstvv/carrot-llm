@@ -24,19 +24,13 @@ chmod +x install.sh start.command stop.command scripts/*.sh
 ./install.sh
 ```
 
-The setup installs Ollama from its official macOS download into `~/Applications/Ollama.app` if it is not already installed. It also installs `uv` if needed, sets up Open WebUI in an isolated Python 3.11 tool environment, creates a persistent secret/data directory under `~/Library/Application Support/Carrot LLM/`, and creates `~/Desktop/Carrot LLM.command` with the cat icon. The installer offers to download the small starter model `qwen3:1.7b`.
+The setup installs Ollama from its official macOS download into `~/Applications/Ollama.app` if it is not already installed. It also installs `uv` if needed, sets up Open WebUI in an isolated Python 3.11 tool environment, creates a persistent secret/data directory under `~/Library/Application Support/Carrot LLM/`, and creates `~/Desktop/Carrot LLM.command` with the cat icon. The installer downloads both required small models: `qwen3:1.7b` for general chat and `lakomoor/vikhr-llama-3.2-1b-instruct:1b` for Russian-language chat. Make sure you have an internet connection and a few GB of free disk space.
 
-### 2. Download a small starter model later (optional)
+### 2. Choose a model for your chat
 
-If you skip the installer's prompt, download `qwen3:1.7b` from the Ollama app. If you installed Ollama through Carrot and want to use Terminal, run:
+After setup, both models appear in Open WebUI's model selector. Choose **`lakomoor/vikhr-llama-3.2-1b-instruct:1b`** for Russian conversations; it is a 1B Russian-focused instruction model. Choose **`qwen3:1.7b`** for general chat. The Russian model is available in Ollama's [official model catalogue](https://ollama.com/lakomoor/vikhr-llama-3.2-1b-instruct).
 
-```bash
-"$HOME/Applications/Ollama.app/Contents/Resources/ollama" pull qwen3:1.7b
-```
-
-If Ollama was already installed in `/Applications`, run `ollama pull qwen3:1.7b` instead.
-
-The model is only a starting point. Measure performance on the target Mac before adding larger models; memory use depends on quantization, context length, and what else is running.
+The model catalogue and router config document the intended Russian language rule, but automatic model switching is not implemented yet. For now, choose the model in the selector. Model speed and memory use depend on the Mac, context length, and what else is running.
 
 ### 3. Start chatting
 

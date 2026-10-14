@@ -124,19 +124,17 @@ else
 fi
 
 if [[ "$ollama_ready" == true ]]; then
-  if ! "$OLLAMA_BIN" list 2>/dev/null | awk 'NR>1 {print $1}' | grep -qx 'qwen3:1.7b'; then
-    printf '\nDownload starter model qwen3:1.7b now? This requires an internet connection and several GB of free disk may be prudent. [Y/n] '
-    read -r answer || answer="n"
-    if [[ -z "$answer" || "$answer" =~ ^[Yy]$ ]]; then
-      "$OLLAMA_BIN" pull qwen3:1.7b
+  REQUIRED_MODELS=("qwen3:1.7b" "lakomoor/vikhr-llama-3.2-1b-instruct:1b")
+  for model in "${REQUIRED_MODELS[@]}"; do
+    if "$OLLAMA_BIN" list 2>/dev/null | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
+      say "Required model $model is already installed."
     else
-      say "Skipped model download. Run: '$OLLAMA_BIN' pull qwen3:1.7b"
+      say "Downloading required model $model..."
+      "$OLLAMA_BIN" pull "$model"
     fi
-  else
-    say "Starter model qwen3:1.7b is already installed."
-  fi
+  done
 else
-  say "Ollama is not responding yet. Open the Ollama app, then run: '$OLLAMA_BIN' pull qwen3:1.7b"
+  fail "Ollama did not start, so required models were not downloaded. Open Ollama and rerun ./install.sh."
 fi
 
 say "Double-click 'Carrot LLM.command' on the Desktop to launch the chat."
