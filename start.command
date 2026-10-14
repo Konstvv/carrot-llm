@@ -78,6 +78,11 @@ if ! curl -fsS --max-time 1 "$URL/health" >/dev/null 2>&1 && [[ "$already_starti
     DATA_DIR="$DATA_DIR" \
     WEBUI_SECRET_KEY="$secret" \
     OLLAMA_BASE_URL="$OLLAMA_URL" \
+    DEFAULT_MODEL_METADATA='{"capabilities":{"file_context":false,"builtin_tools":false,"memory":false,"web_search":false,"code_interpreter":false,"vision":false}}' \
+    ENABLE_CONTEXT_COMPACTION=true \
+    CONTEXT_COMPACTION_TOKEN_THRESHOLD=2800 \
+    CONTEXT_COMPACTION_TOKEN_CAP=2800 \
+    CONTEXT_COMPACTION_RETENTION_PERCENTAGE=25 \
     "$OPEN_WEBUI_BIN" serve --host 127.0.0.1 --port "$PORT" \
     >> "$LOG_FILE" 2>&1 < /dev/null &
   echo "$!" > "$PID_FILE"
