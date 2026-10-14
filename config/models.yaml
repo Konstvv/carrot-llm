@@ -11,8 +11,8 @@ models:
     enabled_by_default: true
 
   - id: "russian"
-    ollama_name: "evilfreelancer/rugpt3:1.3b"
-    purpose: "Russian text generation and completion; base model, not instruction-tuned"
+    ollama_name: "lakomoor/vikhr-llama-3.2-1b-instruct:1b"
+    purpose: "Russian-language chat and everyday tasks"
     recommended_for_8gb_unified_memory: true
     enabled_by_default: true
 
