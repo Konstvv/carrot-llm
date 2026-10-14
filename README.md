@@ -73,6 +73,7 @@ Future: Ollama endpoint may move from this Mac to a home server
 ```
 
 See [docs/architecture.md](docs/architecture.md) and [router/README.md](router/README.md).
+For backup and a future move to another Mac or home server, see [docs/backup-and-migration.md](docs/backup-and-migration.md).
 
 ## Troubleshooting
 
@@ -89,7 +90,7 @@ See [docs/architecture.md](docs/architecture.md) and [router/README.md](router/R
 - [ ] Configure multilingual local RAG and verify source citations
 - [ ] Implement explicit `carrot-auto` model routing with a small, transparent rule set
 - [ ] Add routing fallbacks and memory-aware model selection
-- [ ] Document data backup and migration to a home server
+- [x] Document data backup and migration to a home server
 - [ ] Consider packaging the launcher as a native macOS app
 
 ## Security notes

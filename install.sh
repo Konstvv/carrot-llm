@@ -41,8 +41,13 @@ else
 fi
 
 OPEN_WEBUI_BIN="$(command -v open-webui || true)"
-if [[ -z "$OPEN_WEBUI_BIN" && -x "$HOME/.local/bin/open-webui" ]]; then
-  OPEN_WEBUI_BIN="$HOME/.local/bin/open-webui"
+if [[ -z "$OPEN_WEBUI_BIN" ]]; then
+  UV_TOOL_BIN="$("$UV_BIN" tool dir --bin 2>/dev/null || true)"
+  if [[ -n "$UV_TOOL_BIN" && -x "$UV_TOOL_BIN/open-webui" ]]; then
+    OPEN_WEBUI_BIN="$UV_TOOL_BIN/open-webui"
+  elif [[ -x "$HOME/.local/bin/open-webui" ]]; then
+    OPEN_WEBUI_BIN="$HOME/.local/bin/open-webui"
+  fi
 fi
 [[ -n "$OPEN_WEBUI_BIN" && -x "$OPEN_WEBUI_BIN" ]] || fail "Open WebUI installed, but its executable was not found. Try restarting Terminal and rerunning ./install.sh."
 
