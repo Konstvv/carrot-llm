@@ -122,5 +122,7 @@ for model in "${REQUIRED_MODELS[@]}"; do
   fi
 done
 
-say "Installation complete. Both required models are ready."
+"$ROOT_DIR/scripts/ensure-vikhr-model.sh" "$OLLAMA_BIN" "$ROOT_DIR"
+
+say "Installation complete. Qwen and the 16K Russian Vikhr profile are ready."
 say "Double-click 'Carrot LLM.command' on the Desktop to launch the chat."

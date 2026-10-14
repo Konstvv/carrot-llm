@@ -11,8 +11,10 @@ models:
     enabled_by_default: true
 
   - id: "russian"
-    ollama_name: "lakomoor/vikhr-llama-3.2-1b-instruct:1b"
-    purpose: "Russian-language chat and everyday tasks"
+    ollama_name: "carrot-vikhr:16k"
+    source_model: "lakomoor/vikhr-llama-3.2-1b-instruct:1b"
+    context_length: 16384
+    purpose: "Russian-language chat and everyday tasks; expanded Ollama context profile"
     recommended_for_8gb_unified_memory: true
     enabled_by_default: true
 
