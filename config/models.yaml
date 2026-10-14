@@ -11,16 +11,14 @@ models:
     enabled_by_default: true
 
   - id: "russian"
-    ollama_name: "carrot-vikhr:16k"
-    source_model: "lakomoor/vikhr-llama-3.2-1b-instruct:1b"
-    context_length: 16384
-    purpose: "Russian-language chat and everyday tasks; expanded Ollama context profile"
+    ollama_name: "qwen3:4b"
+    purpose: "Russian-language chat and everyday tasks; multilingual instruction model"
     recommended_for_8gb_unified_memory: true
     enabled_by_default: true
 
   # Optional later experiment. Test memory and response speed before keeping it enabled.
   - id: "stronger"
-    ollama_name: "qwen3:4b"
+    ollama_name: "qwen3:8b"
     purpose: "More demanding reasoning and longer answers"
     recommended_for_8gb_unified_memory: false
     enabled_by_default: false

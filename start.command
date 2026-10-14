@@ -44,7 +44,6 @@ fi
 [[ -n "$OLLAMA_BIN" && -x "$OLLAMA_BIN" ]] || fail "Ollama is not installed. Run ./install.sh from the project folder first."
 
 "$PROJECT_DIR/scripts/ensure-ollama.sh" "$OLLAMA_BIN" "$APP_SUPPORT_DIR"
-"$PROJECT_DIR/scripts/ensure-vikhr-model.sh" "$OLLAMA_BIN" "$PROJECT_DIR"
 
 # Always confirm Ollama is available before reusing an already-running WebUI.
 if curl -fsS --max-time 1 "$URL/health" >/dev/null 2>&1; then

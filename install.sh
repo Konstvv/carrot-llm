@@ -110,7 +110,7 @@ printf 'Project: %s\nData:    %s\nLauncher: %s\n' "$ROOT_DIR" "$APP_SUPPORT_DIR/
 
 "$ROOT_DIR/scripts/ensure-ollama.sh" "$OLLAMA_BIN" "$APP_SUPPORT_DIR"
 
-REQUIRED_MODELS=("qwen3:1.7b" "lakomoor/vikhr-llama-3.2-1b-instruct:1b")
+REQUIRED_MODELS=("qwen3:1.7b" "qwen3:4b")
 for model in "${REQUIRED_MODELS[@]}"; do
   say "Checking whether required model $model is installed..."
   if "$OLLAMA_BIN" list 2>/dev/null | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
@@ -122,7 +122,13 @@ for model in "${REQUIRED_MODELS[@]}"; do
   fi
 done
 
-"$ROOT_DIR/scripts/ensure-vikhr-model.sh" "$OLLAMA_BIN" "$ROOT_DIR"
+LEGACY_MODELS=("carrot-vikhr:16k" "lakomoor/vikhr-llama-3.2-1b-instruct:1b")
+for model in "${LEGACY_MODELS[@]}"; do
+  if "$OLLAMA_BIN" list 2>/dev/null | awk 'NR>1 {print $1}' | grep -Fxq "$model"; then
+    say "Removing the retired Russian model $model..."
+    "$OLLAMA_BIN" rm "$model"
+  fi
+done
 
-say "Installation complete. Qwen and the 16K Russian Vikhr profile are ready."
+say "Installation complete. Qwen3 1.7B and the larger Russian-capable Qwen3 4B are ready."
 say "Double-click 'Carrot LLM.command' on the Desktop to launch the chat."

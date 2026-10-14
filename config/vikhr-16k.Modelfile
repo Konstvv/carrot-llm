@@ -1,2 +1,0 @@
-FROM lakomoor/vikhr-llama-3.2-1b-instruct:1b
-PARAMETER num_ctx 16384
