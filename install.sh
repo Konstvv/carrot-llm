@@ -66,6 +66,16 @@ mkdir -p "$DESKTOP_DIR"
 DESKTOP_LAUNCHER="$DESKTOP_DIR/Carrot LLM.command"
 printf '#!/bin/bash\nexec %q/start.command\n' "$ROOT_DIR" > "$DESKTOP_LAUNCHER"
 chmod +x "$DESKTOP_LAUNCHER"
+if command -v swiftc >/dev/null 2>&1; then
+  ICON_HELPER="$APP_SUPPORT_DIR/set-desktop-icon"
+  if ! swiftc -framework AppKit "$ROOT_DIR/scripts/set-desktop-icon.swift" -o "$ICON_HELPER"; then
+    say "Could not build the Finder icon helper. The launcher still works; see README for manual setup."
+  elif ! "$ICON_HELPER" "$ROOT_DIR/assets/carrot-cat.png" "$DESKTOP_LAUNCHER"; then
+    say "Could not set the Finder icon automatically. The launcher still works; see README for manual setup."
+  fi
+else
+  say "Swift compiler was not found, so the desktop shortcut keeps the default icon."
+fi
 
 say "Setup complete."
 printf 'Project: %s\nData:    %s\nLauncher: %s\n' "$ROOT_DIR" "$APP_SUPPORT_DIR/data" "$DESKTOP_LAUNCHER"

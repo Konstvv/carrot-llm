@@ -8,7 +8,7 @@ A local-first AI assistant for macOS. The first milestone combines **Ollama** (l
 
 - Local model inference through Ollama.
 - A browser-based chat UI through Open WebUI.
-- A double-click `start.command` launcher and matching stop script.
+- A double-click `Carrot LLM.command` desktop shortcut with a custom cat icon, plus a matching stop script.
 - Persistent Open WebUI data outside the repository.
 - Local-only web binding (`127.0.0.1`) by default.
 - Model and future routing configuration kept in small YAML files.
@@ -28,7 +28,7 @@ chmod +x install.sh start.command stop.command scripts/*.sh
 ./install.sh
 ```
 
-The setup script installs Open WebUI in an isolated Python 3.11 tool environment, creates a persistent secret/data directory under `~/Library/Application Support/Carrot LLM/`, and creates `~/Desktop/Carrot LLM.command`.
+The setup script installs Open WebUI in an isolated Python 3.11 tool environment, creates a persistent secret/data directory under `~/Library/Application Support/Carrot LLM/`, and creates `~/Desktop/Carrot LLM.command` with the cat icon.
 
 ### 3. Download a small starter model
 
@@ -47,6 +47,8 @@ Double-click **Carrot LLM.command** on the desktop, or run `./start.command` in 
 The first page may ask you to create a local admin account. Use a password you do not reuse elsewhere. The account and chat history are stored locally.
 
 To stop Carrot, double-click `stop.command` or run `./stop.command`. Ollama may continue running in the background because it is managed by its own app.
+
+If setup could not set the icon automatically, open `assets/carrot-cat.png` and `Carrot LLM.command` in Finder's **Get Info** windows. Copy the PNG's small icon in the top-left corner, select the shortcut's small icon, and paste.
 
 ## Where data lives
 
