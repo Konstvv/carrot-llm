@@ -40,6 +40,10 @@ The first page may ask you to create a local admin account. Use a password you d
 
 To stop Carrot, double-click `stop.command` or run `./stop.command`. Ollama may continue running in the background because it is managed by its own app.
 
+### Uninstall
+
+Run `./uninstall.sh` and choose whether to keep Ollama and its models or remove those too. The uninstaller asks you to type `REMOVE` before it deletes anything. Both options delete Carrot's local chats, uploaded documents, and settings; the full removal also deletes Ollama's default `~/.ollama` storage and its app if present. A custom `OLLAMA_MODELS` directory is left untouched. The project folder itself is kept so the uninstaller can finish; delete that folder separately if you no longer need it.
+
 If setup could not set the icon automatically, open `assets/carrot-cat.png` and `Carrot LLM.command` in Finder's **Get Info** windows. Copy the PNG's small icon in the top-left corner, select the shortcut's small icon, and paste.
 
 ## Where data lives
