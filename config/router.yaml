@@ -1,0 +1,22 @@
+# Planned router configuration. Not active in the initial release.
+# The router will be an OpenAI-compatible local API used by Open WebUI.
+
+listen:
+  host: "127.0.0.1"
+  port: 8000
+
+routing:
+  default_model: "quick"
+  # Planned rule examples, not yet executed:
+  rules:
+    - task: "short_chat"
+      model: "quick"
+    - task: "complex_reasoning"
+      model: "stronger"
+    - task: "question_about_documents"
+      strategy: "use_open_webui_rag_context"
+      model: "quick"
+
+safety:
+  fallback_to_default: true
+  max_parallel_llm_requests: 1

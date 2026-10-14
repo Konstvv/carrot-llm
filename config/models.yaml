@@ -1,0 +1,25 @@
+# Informational model catalogue for the first milestone.
+# This file is not read by the launcher yet; it will become input for the router later.
+
+ollama_base_url: "http://127.0.0.1:11434"
+
+models:
+  - id: "quick"
+    ollama_name: "qwen3:1.7b"
+    purpose: "General chat and short tasks"
+    recommended_for_8gb_unified_memory: true
+    enabled_by_default: true
+
+  # Optional later experiment. Test memory and response speed before keeping it enabled.
+  - id: "stronger"
+    ollama_name: "qwen3:4b"
+    purpose: "More demanding reasoning and longer answers"
+    recommended_for_8gb_unified_memory: false
+    enabled_by_default: false
+
+  # Optional multilingual embedding model for RAG; download only when ready to configure RAG.
+  - id: "embeddings_multilingual"
+    ollama_name: "bge-m3"
+    purpose: "Multilingual document embeddings"
+    recommended_for_8gb_unified_memory: false
+    enabled_by_default: false

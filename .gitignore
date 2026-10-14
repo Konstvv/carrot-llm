@@ -1,0 +1,30 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.secret
+
+# Runtime data (keep all personal data outside the repository)
+data/
+models/
+embeddings/
+*.db
+*.sqlite3
+*.log
+*.pid
+
+# Editors
+.vscode/
+.idea/
