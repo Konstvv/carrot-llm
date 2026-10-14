@@ -10,6 +10,14 @@ SECRET_FILE="$APP_SUPPORT_DIR/webui_secret_key"
 PORT="8080"
 URL="http://127.0.0.1:${PORT}"
 OLLAMA_URL="http://127.0.0.1:11434"
+OLLAMA_BIN="$(command -v ollama || true)"
+OLLAMA_APP=""
+for candidate in "$HOME/Applications/Ollama.app" "/Applications/Ollama.app"; do
+  if [[ -d "$candidate" ]]; then OLLAMA_APP="$candidate"; break; fi
+done
+if [[ -z "$OLLAMA_BIN" && -n "$OLLAMA_APP" && -x "$OLLAMA_APP/Contents/Resources/ollama" ]]; then
+  OLLAMA_BIN="$OLLAMA_APP/Contents/Resources/ollama"
+fi
 
 say() { printf '\n🥕 %s\n' "$*"; }
 fail() { printf '\nCarrot LLM: %s\n' "$*" >&2; printf 'See log: %s\n' "$LOG_FILE" >&2; exit 1; }
@@ -33,6 +41,7 @@ if [[ -z "$OPEN_WEBUI_BIN" ]]; then
 fi
 [[ -n "$OPEN_WEBUI_BIN" && -x "$OPEN_WEBUI_BIN" ]] || fail "Open WebUI is not installed. Run ./install.sh from the project folder first."
 [[ -s "$SECRET_FILE" ]] || fail "Local setup is incomplete. Run ./install.sh from the project folder first."
+[[ -n "$OLLAMA_BIN" && -x "$OLLAMA_BIN" ]] || fail "Ollama is not installed. Run ./install.sh from the project folder first."
 
 if curl -fsS --max-time 1 "$URL/health" >/dev/null 2>&1; then
   say "Carrot is already running. Opening the chat..."
@@ -42,7 +51,11 @@ fi
 
 if ! curl -fsS --max-time 2 "$OLLAMA_URL/api/tags" >/dev/null 2>&1; then
   say "Starting Ollama..."
-  open -a Ollama >/dev/null 2>&1 || true
+  if [[ -n "$OLLAMA_APP" ]]; then
+    open -a "$OLLAMA_APP" >/dev/null 2>&1 || true
+  else
+    open -a Ollama >/dev/null 2>&1 || true
+  fi
   ollama_ready=false
   for _ in $(seq 1 30); do
     if curl -fsS --max-time 2 "$OLLAMA_URL/api/tags" >/dev/null 2>&1; then ollama_ready=true; break; fi

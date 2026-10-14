@@ -9,15 +9,40 @@ fail() { printf '\nCarrot setup: %s\n' "$*" >&2; exit 1; }
 
 [[ "$(uname -s)" == "Darwin" ]] || fail "This setup script currently supports macOS only."
 command -v curl >/dev/null 2>&1 || fail "curl was not found. Install Command Line Tools for macOS and retry."
+command -v unzip >/dev/null 2>&1 || fail "unzip was not found. Install Command Line Tools for macOS and retry."
 
-if ! command -v ollama >/dev/null 2>&1; then
-  cat >&2 <<'MSG'
-Ollama CLI was not found.
-1. Install Ollama for macOS from https://ollama.com/download/mac
-2. Open the Ollama app once.
-3. Run this setup script again.
-MSG
-  exit 1
+OLLAMA_APP=""
+for candidate in "$HOME/Applications/Ollama.app" "/Applications/Ollama.app"; do
+  if [[ -d "$candidate" ]]; then OLLAMA_APP="$candidate"; break; fi
+done
+
+OLLAMA_BIN="$(command -v ollama || true)"
+if [[ -z "$OLLAMA_BIN" && -n "$OLLAMA_APP" && -x "$OLLAMA_APP/Contents/Resources/ollama" ]]; then
+  OLLAMA_BIN="$OLLAMA_APP/Contents/Resources/ollama"
+fi
+
+if [[ -z "$OLLAMA_BIN" ]]; then
+  say "Downloading Ollama from the official macOS distribution..."
+  OLLAMA_TEMP_DIR="$(mktemp -d)"
+  trap 'rm -rf "$OLLAMA_TEMP_DIR"' EXIT
+  curl --fail --location --progress-bar "https://ollama.com/download/Ollama-darwin.zip" -o "$OLLAMA_TEMP_DIR/Ollama-darwin.zip"
+  unzip -q "$OLLAMA_TEMP_DIR/Ollama-darwin.zip" -d "$OLLAMA_TEMP_DIR"
+  [[ -d "$OLLAMA_TEMP_DIR/Ollama.app" ]] || fail "The Ollama download did not contain Ollama.app."
+  mkdir -p "$HOME/Applications"
+  OLLAMA_APP="$HOME/Applications/Ollama.app"
+  if [[ -e "$OLLAMA_APP" ]]; then
+    fail "An incomplete Ollama app already exists at $OLLAMA_APP. Remove or repair it, then rerun setup."
+  fi
+  ditto "$OLLAMA_TEMP_DIR/Ollama.app" "$OLLAMA_APP"
+  OLLAMA_BIN="$OLLAMA_APP/Contents/Resources/ollama"
+  rm -rf "$OLLAMA_TEMP_DIR"
+  trap - EXIT
+fi
+[[ -x "$OLLAMA_BIN" ]] || fail "Ollama was installed but its command was not found. See https://ollama.com/download/mac."
+if [[ -z "$OLLAMA_APP" ]]; then
+  for candidate in "$HOME/Applications/Ollama.app" "/Applications/Ollama.app"; do
+    if [[ -d "$candidate" ]]; then OLLAMA_APP="$candidate"; break; fi
+  done
 fi
 
 if ! command -v uv >/dev/null 2>&1; then
@@ -72,6 +97,9 @@ if command -v swiftc >/dev/null 2>&1; then
     say "Could not build the Finder icon helper. The launcher still works; see README for manual setup."
   elif ! "$ICON_HELPER" "$ROOT_DIR/assets/carrot-cat.png" "$DESKTOP_LAUNCHER"; then
     say "Could not set the Finder icon automatically. The launcher still works; see README for manual setup."
+  else
+    /usr/bin/SetFile -a C "$DESKTOP_LAUNCHER" 2>/dev/null || true
+    touch "$DESKTOP_LAUNCHER"
   fi
 else
   say "Swift compiler was not found, so the desktop shortcut keeps the default icon."
@@ -84,7 +112,11 @@ if curl -fsS --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then
   ollama_ready=true
 else
   ollama_ready=false
-  open -a Ollama >/dev/null 2>&1 || true
+  if [[ -n "$OLLAMA_APP" ]]; then
+    open -a "$OLLAMA_APP" >/dev/null 2>&1 || true
+  else
+    open -a Ollama >/dev/null 2>&1 || true
+  fi
   for _ in $(seq 1 30); do
     if curl -fsS --max-time 2 http://127.0.0.1:11434/api/tags >/dev/null 2>&1; then ollama_ready=true; break; fi
     sleep 2
@@ -92,19 +124,19 @@ else
 fi
 
 if [[ "$ollama_ready" == true ]]; then
-  if ! ollama list 2>/dev/null | awk 'NR>1 {print $1}' | grep -qx 'qwen3:1.7b'; then
+  if ! "$OLLAMA_BIN" list 2>/dev/null | awk 'NR>1 {print $1}' | grep -qx 'qwen3:1.7b'; then
     printf '\nDownload starter model qwen3:1.7b now? This requires an internet connection and several GB of free disk may be prudent. [Y/n] '
     read -r answer || answer="n"
     if [[ -z "$answer" || "$answer" =~ ^[Yy]$ ]]; then
-      ollama pull qwen3:1.7b
+      "$OLLAMA_BIN" pull qwen3:1.7b
     else
-      say "Skipped model download. Run: ollama pull qwen3:1.7b"
+      say "Skipped model download. Run: '$OLLAMA_BIN' pull qwen3:1.7b"
     fi
   else
     say "Starter model qwen3:1.7b is already installed."
   fi
 else
-  say "Ollama is not responding yet. Open the Ollama app, then run: ollama pull qwen3:1.7b"
+  say "Ollama is not responding yet. Open the Ollama app, then run: '$OLLAMA_BIN' pull qwen3:1.7b"
 fi
 
 say "Double-click 'Carrot LLM.command' on the Desktop to launch the chat."

@@ -15,32 +15,30 @@ A local-first AI assistant for macOS. The first milestone combines **Ollama** (l
 
 ## First-time setup (Mac)
 
-### 1. Install Ollama
+### 1. Install Carrot and Ollama
 
-Download and install [Ollama for macOS](https://ollama.com/download/mac), then open the Ollama app once. Carrot expects the Ollama CLI to be available as `ollama`.
-
-### 2. Install Carrot dependencies
-
-Install [uv](https://docs.astral.sh/uv/getting-started/installation/) if you do not have it. The setup script can install it using Astral's official installer. In Terminal, from the cloned project directory, run:
+In Terminal, from the cloned project directory, run:
 
 ```bash
 chmod +x install.sh start.command stop.command scripts/*.sh
 ./install.sh
 ```
 
-The setup script installs Open WebUI in an isolated Python 3.11 tool environment, creates a persistent secret/data directory under `~/Library/Application Support/Carrot LLM/`, and creates `~/Desktop/Carrot LLM.command` with the cat icon.
+The setup installs Ollama from its official macOS download into `~/Applications/Ollama.app` if it is not already installed. It also installs `uv` if needed, sets up Open WebUI in an isolated Python 3.11 tool environment, creates a persistent secret/data directory under `~/Library/Application Support/Carrot LLM/`, and creates `~/Desktop/Carrot LLM.command` with the cat icon. The installer offers to download the small starter model `qwen3:1.7b`.
 
-### 3. Download a small starter model
+### 2. Download a small starter model later (optional)
 
-The setup script offers to download `qwen3:1.7b`. You can also do this later:
+If you skip the installer's prompt, download `qwen3:1.7b` from the Ollama app. If you installed Ollama through Carrot and want to use Terminal, run:
 
 ```bash
-ollama pull qwen3:1.7b
+"$HOME/Applications/Ollama.app/Contents/Resources/ollama" pull qwen3:1.7b
 ```
+
+If Ollama was already installed in `/Applications`, run `ollama pull qwen3:1.7b` instead.
 
 The model is only a starting point. Measure performance on the target Mac before adding larger models; memory use depends on quantization, context length, and what else is running.
 
-### 4. Start chatting
+### 3. Start chatting
 
 Double-click **Carrot LLM.command** on the desktop, or run `./start.command` in Terminal. The first launch may take a little while as Open WebUI initializes. The UI opens at <http://127.0.0.1:8080>.
 
